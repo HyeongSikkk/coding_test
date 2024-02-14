@@ -5,50 +5,49 @@ len_queens = int(input())
 start = time.time()
 cnt = [0]
 def board_maker(n) :
-    return {idx:{idx:0 for idx in range(n)} for idx in range(n)}
+    return [[0 for i in range(n)]for i in range(n)]
+
+def print_array(array) :
+    text = ''
+    for line in array :
+        line_ = list(map(str, line))
+        text += ' '.join(line_)+'\n'
+    print(text)
 
 def check(row, col, n = len_queens) :
-    #for num in board.values() :
-    #    if num[col] == 1 :
-    #        return False
-    
     # y = x 방향 
     # col을 0으로 만들고 시작
     s_row, s_col = row, col
-    for _ in range(col) :
-        if s_row == n - 1 :
+    # 2, 3 -> 2, 3
+    # 
+    if row+col < len_queens :
+        value = col
+        s_row += value
+        s_col -= value
+    else :
+        value = n -1 -row
+        s_row += value
+        s_col -= value
+    for i in range(n) :
+        if s_row < 0 or s_col == n :
             break
-        s_col -= 1
-        s_row += 1
-    # y=x 방향으로 탐색 시작
-    while True :
-        try :
-            if board[s_row][s_col] == 1 :
-                return False
-        except :
-            break
+        if board[s_row][s_col] == 1 :
+            return False
         s_row -= 1
         s_col += 1
-        
     # y = -x 방향
     # row를 0으로 만들고 시작
     s_row, s_col = row, col
-    for _ in range(col) :
-        if s_row == 0 :
-            break
-        s_col -= 1
+    value = len_queens -1 - s_row if s_row > s_col else len_queens -1 -s_col
+    s_row += value
+    s_col += value
+    for i in range(s_row + 1 if s_row < s_col else s_col + 1) :
+        if board[s_row][s_col] == 1 :
+            return False
         s_row -= 1
-    while True :
-        try :
-            if board[s_row][s_col] == 1 :
-                return False
-        except :
-            break
-        s_row += 1
-        s_col += 1
+        s_col -= 1
     return True
-    
-
+        
 def solution(n, cols = [i for i in range(len_queens)]) :
     if n == len_queens :
         cnt[0] += 1
