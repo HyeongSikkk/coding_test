@@ -1,7 +1,3 @@
-import sys
-
-input = sys.stdin.readline
-
 funcs = []
 
 N = int(input())
@@ -45,7 +41,7 @@ def solution(n, func) :
         funcs.append(func)
             
     else :
-        for oper in operator :
+        for oper in ['+', '-', '*', '//'] :
             if condition([*func, oper]) :
                 solution(n+1, [*func, oper, numbers[n]])
 
