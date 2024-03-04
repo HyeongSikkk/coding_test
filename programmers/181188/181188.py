@@ -1,46 +1,48 @@
-class BinaryTree :
-    def __init__(self, targets) :
-        self.targets = targets
-        self.head = None
-        self.cur = None
-        for arr in targets :
-            self.append(arr)
-        
-    def append(self, arr) :
-        if self.head == None :
-            self.head = Node(arr)
-            self.cur = self.head
-            
-        else :
-            # 노드의 값보다 더 큰 경우
-            if self.cur.value < arr[0] :
-                if self.cur.right == None :
-                    self.cur.right = Node(arr)
-                    self.cur = self.head
-                
-                else :
-                    self.cur = self.cur.right
-                    self.append(arr)
+def solution(targets) :
+    class Node :
+        def __init__(self, widths) :
+            self.start, self.end = widths
+            self.left = None
+            self.middle = None
+            self.right = None
+
+    class TargetTree :
+        def __init__(self) :
+            self.head = None
+            self.cnt = 0
+
+        def link_target(self, widths) :
+            if self.head is None :
+                self.head = Node(widths)
+                self.cnt += 1
+
             else :
-                if self.cur.left == None :
-                    self.cur.left = Node(arr)
-                    self.cur = self.head
-                else :
-                    self.cur = self.cur.left
-                    self.append(arr)
+                nodes = [self.head]
+                while nodes :
+                    n = nodes.pop()
+                    # 범위가 통하는 경우
+                    if n.start < widths[1] and n.start >= widths[0] :
+                        if n.middle is None :
+                            n.middle = [Node(widths)]
+                        else :
+                            n.middle.append(Node(widths))
 
-class Node :
-    def __init__(self, arr) :
-        self.arr = arr
-        self.value = arr[0]
-        self.left = None
-        self.right = None
-
-def node_to_list(node) :
-    left, middle, right = [], [], []
-    if node.left != None :
-        left = node_to_list(node.left)
-    middle.append(node.arr)
-    if node.right != None :
-        right = node_to_list(node.right)
-    return [*left, *middle, *right]
+                    # 값이 더 큰 경우
+                    elif n.end <= widths[0] :
+                        if n.right is None :
+                            n.right = Node(widths)
+                            self.cnt += 1
+                        else :
+                            nodes.append(n.right)
+                    # 값이 더 작은 경우
+                    else :
+                        if n.left is None :
+                            n.left = Node(widths)
+                            self.cnt += 1
+                        else :
+                            nodes.append(n.left)
+    targets.sort(key = lambda x : x[1] - x[0])
+    t = TargetTree()
+    for target in targets :
+        t.link_target(target)
+    return t.cnt
