@@ -18,13 +18,22 @@ for _ in range(cnt) :
     child_node = peoples[child]
     par_node.children.append(child_node)
     child_node.parent = par_node
-def dfs(n = 0, cur = None) :
-    if n == 0 :
-        cur = peoples[a]
+searched = set()
+def dfs(n, cur) :
     if cur.value == b :
         print(n)
         exit()
-    roads = [cur.parent, *cur.children]
+    people = []
+    if cur.parent is not None :
+        people.append(cur.parent)
+    people += cur.children
+    roads = []
+    for who in people :
+        if who not in searched :
+            roads.append(who)
+            searched.add(who)
     for man in roads :
         dfs(n+1, man)
-dfs()
+dfs(0, peoples[a])
+print(-1)
+        
