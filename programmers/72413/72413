@@ -1,0 +1,89 @@
+def solution(n: int, s: int, a: int, b: int, fares: list, *args)-> int:
+    fare_dict = {i+1: {} for i in range(n)} # {road: {road: fare}}
+    for fare in fares :
+        road1, road2, pay = fare
+        fare_dict[road1][road2] = pay
+        fare_dict[road2][road1] = pay
+    
+    # 둘이 같이 갈 경우 최소 금액 구하기
+    all_way = {} # {분기점:{a:[요금들], b:[요금들]}}
+    def find_road(road, passed_road, pay = 0) :
+        new_passed_road = [*passed_road]
+        for road_key in fare_dict[road] :
+            if road_key not in new_passed_road :
+                pay += fare_dict[road][road_key]
+                func_a(road_key, [*new_passed_road, road_key], [*new_passed_road, road_key], pay)
+                func_b(road_key, [*new_passed_road, road_key], [*new_passed_road, road_key], 0)
+                find_road(road_key, [*new_passed_road, road_key], pay)
+                pay -= fare_dict[road][road_key]
+    
+    def func_a(road, passed_road, way, pay) :
+        if road == a :
+            key = str(way)
+            if key in all_way :
+                all_way[key]['a'].append(pay)
+            else :
+                all_way[key] = {'a': [], 'b': []}
+                all_way[key]['a'] = [pay]
+        else :
+            new_passed_road = [*passed_road]
+            for road_key in fare_dict[road] :
+                if road_key not in new_passed_road :
+                    pay += fare_dict[road][road_key]
+                    func_a(road_key, [*new_passed_road, road_key], way, pay)
+                    pay -= fare_dict[road][road_key]
+    
+    def func_b(road, passed_road, way, pay) :
+        if road == b :
+            key = str(way)
+            if key in all_way :
+                all_way[key]['b'].append(pay)
+            else :
+                all_way[key] = {'a': [], 'b': []}
+                all_way[key]['b'] = [pay]
+        else :
+            new_passed_road = [*passed_road]
+            for road_key in fare_dict[road] :
+                if road_key not in new_passed_road :
+                    pay += fare_dict[road][road_key]
+                    func_b(road_key, [*new_passed_road, road_key], way, pay)
+                    pay -= fare_dict[road][road_key]
+    find_road(s, [s])
+    min_num = []
+    for key in all_way :
+        if len(all_way[key]['a']) > 0 and len(all_way[key]['b']) > 0 :
+            result = min(all_way[key]['a']) + min(all_way[key]['b']) 
+            if len(min_num) == 0 :
+                min_num = [result]
+            
+            elif min_num[0] > result :
+                min_num = [result]
+    
+    # 따로 갈 경우의 최소 금액 구하기
+    all_way_a, all_way_b = [], []
+    def go_road(road, passed_road, target, pay=0) :
+        is_end = False
+        if target == a :
+            if road == target :
+                is_end = True
+                all_way_a.append(pay)
+        elif target == b :
+            if road == target :
+                is_end = True
+                all_way_b.append(pay)
+        
+        if not is_end :
+            new_passed_road = [*passed_road]
+            for road_key in fare_dict[road] :
+                if road_key not in new_passed_road :
+                    pay += fare_dict[road][road_key]
+                    go_road(road_key, [*new_passed_road, road_key], target, pay)
+                    pay -= fare_dict[road][road_key]
+    go_road(s, [s], a)
+    go_road(s, [s], b)
+    other_case_result = min(all_way_a) + min(all_way_b)
+    if len(min_num) == 0 :
+        answer = other_case_result
+    else :
+        answer = min_num[0] if min_num[0] < other_case_result else other_case_result
+    return answer
