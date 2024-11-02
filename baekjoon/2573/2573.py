@@ -1,5 +1,7 @@
+import sys
+
 # 데이터 입력받아오기, # 3<= N <= 300, 3<= M <= 300
-N, M= tuple(map(int, input().split(" ")))
+N, M= tuple(map(int, sys.stdin.readline().split(" ")))
 ice_mountains=[]
 melted= [[False for i in range(M)] for i in range(N)]
 not_melt_list= []
@@ -10,7 +12,6 @@ for i in range(N) :
             melted[i][idx]= True
         else :
             not_melt_list.append((i, idx))
-print(ice_mountains[0][:10])
 # 상하좌우 정의
 rcs= [
     (1, 0),
